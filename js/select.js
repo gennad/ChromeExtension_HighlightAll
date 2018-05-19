@@ -371,6 +371,10 @@ function localSearchHighlight(searchStr, singleWordSearch, doc)
         {
             continue;
         }
+
+        if (phrases[p].length < 3) {
+            continue;
+        }
         
         if( p % 2 == 0 ) 
         {
@@ -409,6 +413,25 @@ function localSearchHighlight(searchStr, singleWordSearch, doc)
 // Returns function that generates color values
 // generateRandom: boolean to determine if function returned generates random colors
 function colorGenerator(generateRandom) {
+    var colorCodes = [
+        "#FFFF00", # yellow
+        "#008000", # green
+        "#00FFFF", # aqua
+        "#0000FF", # blue
+        "#800000", # maroon
+        "#800080", # purple
+        "#00FFFF", # aqua
+        "#008080", # teal
+        "#000080", # fuchsia
+        "#800080", # purple
+    ];
+    var colorIndex = 0;
+
+    return function() {
+        if (colorIndex >= len(colorCodes)) colorIndex = 0;
+        return colorCodes[colorIndex];
+    }
+
     if (generateRandom) {
         return function() {
             var c = [hexshort(), hexshort(), hexshort()];
