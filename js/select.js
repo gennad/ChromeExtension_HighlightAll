@@ -410,15 +410,12 @@ function localSearchHighlight(searchStr, singleWordSearch, doc) {
 function colorGenerator(generateRandom) {
   var colorCodes = [
     "#FFFF00", // yellow
-    "#FFA07A", // violet
-    "#00FF00", // lime
-    "#00FFFF", // aqua
     "#FFA07A", // light salmon
-    "#FFA07A", // light blue
-    "#800080", // purple
+    "#DDA0DD", // plum
+    "#00FFFF", // aqua
+    "#A3A375", // light brown
     "#008080", // teal
-    "#000080", // fuchsia
-    "#800080" // purple
+    "#FFA07A" // light salmon
   ];
   var colorIndex = 0;
 

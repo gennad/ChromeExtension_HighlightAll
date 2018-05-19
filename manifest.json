@@ -1,10 +1,11 @@
 {
+        "manifest_version": 2,
 	"version": "0.37",
 	"name": "Highlight All",
 	"description": "Double click a word to highlight all occurrences.",
 
 	"update_url": "http://clients2.google.com/service/update2/crx",
-	"background_page": "htm/background.htm",
+	"background": "htm/background.htm",
 
 	"browser_action": 
 	{
