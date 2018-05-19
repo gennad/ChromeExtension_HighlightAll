@@ -416,7 +416,7 @@ function colorGenerator(generateRandom) {
 
   return function() {
     if (colorIndex >= len(colorCodes)) colorIndex = 0;
-    return colorCodes[colorIndex];
+    return colorCodes[colorIndex++];
   };
 
   if (generateRandom) {
