@@ -239,10 +239,16 @@ function updateBooleans(clearBool, highlightOnSelect, singleBool) {
 // Update settings
 function processGetSettings(response) {
   updateBooleans(
-    response.clearBetweenSelect,
-    response.highlightOnSelect,
-    response.singleWordSearch
+    false,
+    true,
+    false
   );
+
+  //updateBooleans(
+  //  response.clearBetweenSelect,
+  //  response.highlightOnSelect,
+  //  response.singleWordSearch
+  //);
 }
 
 chrome.extension.sendRequest({ command: "getSettings" }, processGetSettings);
@@ -292,7 +298,7 @@ function stripVowelAccent(str) {
  *   http://www.tedpavlic.com/post_inpage_highlighting_example.php 
  * for additional modifications of this base code. 
  */
-function highlightWord(node, word, doc) {
+function highlightWord(node, word, doc, color) {
   doc = typeof doc != "undefined" ? doc : document;
   var hinodes = [],
     coll;
@@ -300,7 +306,7 @@ function highlightWord(node, word, doc) {
   if (node.hasChildNodes) {
     var hi_cn;
     for (hi_cn = 0; hi_cn < node.childNodes.length; hi_cn++) {
-      coll = highlightWord(node.childNodes[hi_cn], word, doc);
+      coll = highlightWord(node.childNodes[hi_cn], word, doc, color);
       hinodes = hinodes.concat(coll);
     }
   }
@@ -320,7 +326,7 @@ function highlightWord(node, word, doc) {
         selection.removeAllRanges();
         selection.addRange(highlightRange);
       }
-      highlight(colorgen());
+      highlight(color);
     }
   }
   return hinodes;
@@ -350,7 +356,8 @@ function localSearchHighlight(searchStr, singleWordSearch, doc) {
   }
 
   var hinodes = [];
-  colorgen = colorGenerator(singleWordSearch || !clearBetweenSelections);
+  if (colorgen == undefined) colorgen = colorGenerator(singleWordSearch || !clearBetweenSelections);
+  let color = colorgen();
 
   for (p = 0; p < phrases.length; p++) {
     phrases[p] = unescape(phrases[p]).replace(/^\s+|\s+$/g, "");
@@ -385,7 +392,8 @@ function localSearchHighlight(searchStr, singleWordSearch, doc) {
       hinodes = highlightWord(
         doc.getElementsByTagName("body")[0],
         words[w],
-        doc
+        doc,
+        color
       );
     }
   }
@@ -402,12 +410,12 @@ function localSearchHighlight(searchStr, singleWordSearch, doc) {
 function colorGenerator(generateRandom) {
   var colorCodes = [
     "#FFFF00", // yellow
-    "#008000", // green
+    "#FFA07A", // violet
+    "#00FF00", // lime
     "#00FFFF", // aqua
-    "#0000FF", // blue
-    "#800000", // maroon
+    "#FFA07A", // light salmon
+    "#FFA07A", // light blue
     "#800080", // purple
-    "#00FFFF", // aqua
     "#008080", // teal
     "#000080", // fuchsia
     "#800080" // purple
@@ -415,7 +423,7 @@ function colorGenerator(generateRandom) {
   var colorIndex = 0;
 
   return function() {
-    if (colorIndex >= len(colorCodes)) colorIndex = 0;
+    if (colorIndex >= colorCodes.length) colorIndex = 0;
     return colorCodes[colorIndex++];
   };
 
