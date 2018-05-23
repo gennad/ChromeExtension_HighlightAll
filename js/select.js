@@ -7,14 +7,13 @@
  */
 
 var clearBetweenSelections = true;
-var singleSearch = false;
 var lastText = "";
 var imedBool = false;
 var highlightedPage = false;
 var select;
 var triggeredOnce = false;
 
-//Listener to highlight on selection
+// Listener to highlight on selection
 document.onmouseup = highlightSelection;
 document.onmousedown = function(event) {
   if (event != undefined) {
@@ -24,9 +23,8 @@ document.onmousedown = function(event) {
     }
   }
 };
-//document.onselectionchange = function(){if (window.getSelection().toString() != '') {console.log("changed to " + window.getSelection().toString());}};
 
-//Listener for incoming requests
+// Listener for incoming requests
 chrome.extension.onRequest.addListener(processRequest);
 
 // Handle incoming requests
@@ -107,78 +105,100 @@ Color.prototype = {
   }
 };
 
-//Highlight all occurances of the current selection
-function highlightSelection(e) {
+const RIGHT_MOUSE_CLICK = 2;
+
+// Main entry point.
+// Highlight all occurances of the current selection
+function highlightSelection(event) {
   selection = window.getSelection();
 
-  //Skip this section if mouse event is undefined
-  if (e != undefined) {
-    //Ignore right clicks; avoids odd behavior with CTRL key
-    if (e.button == 2) {
+  // Skip this section if mouse event is undefined
+  if (event !== undefined) {
+    // Ignore right clicks; avoids odd behavior with CTRL key
+    if (e.button == RIGHT_MOUSE_CLICK) {
       return;
     }
 
-    //Exit if CTRL key is held while auto highlight is checked on
-    if (imedBool && e.ctrlKey) {
+    // Exit if CTRL key is held while auto highlight is checked on
+    if (imedBool && event.ctrlKey) {
       return;
     }
 
-    //Exit if CTRL key not held and auto highlight is checked off
-    if (!imedBool && !e.ctrlKey) {
+    // Exit if CTRL key not held and auto highlight is checked off
+    if (!imedBool && !event.ctrlKey) {
       return;
     }
   }
 
   var selectionTagName;
-  //Avoid inputs like the plague..
+  // Avoid inputs like the plague..
   try {
     selectionTagName = selection.anchorNode.childNodes[0].tagName.toLowerCase();
   } catch (err) {
-    //fail silently :-D
-  }
-  if (selectionTagName == "input") {
+    // Fail silently
     return;
   }
 
-  // Clear all highlights if requested
-  if (clearBetweenSelections && highlightedPage == true) {
-    clearHighlightsOnPage();
+  if (selectionTagName == "input") {
+    return;
   }
 
   var selectedText = window
     .getSelection()
     .toString()
     .replace(/^\s+|\s+$/g, "");
-  var testText = selectedText.toLowerCase();
 
-  //Exit if selection is whitespace or what was previously selected
-  if (selectedText == "" || lastText == testText) {
+  if (selectedText == "") return;
+
+  var lowerCasedText = selectedText.toLowerCase();
+  // Exit if selection is  what was previously selected
+  if (lastText == lowerCasedText) {
     return;
   }
 
   if (selection.toString() != "") {
-    var mySpan = document.createElement("span");
+    var spanElement = document.createElement("span");
+
+    // Remove id from previously selected
     var prevSpan = document.getElementById("mySelectedSpan");
     if (prevSpan != null) {
       prevSpan.removeAttribute("id");
     }
-    mySpan.id = "mySelectedSpan";
+
+    spanElement.id = "mySelectedSpan";
+
     var range = selection.getRangeAt(0).cloneRange();
-    mySpan.appendChild(range.extractContents());
-    range.insertNode(mySpan);
+
+    // Add text to span element
+    spanElement.appendChild(range.extractContents());
+
+    // Insert span element into the range
+    range.insertNode(spanElement);
   }
 
-  //Perform highlighting
-  localSearchHighlight(selectedText, singleSearch);
-  highlightedPage = true;
+  // Limit for words to search, if unlimited, browser may crash
+  var MAX_WORDS = 50;
+  var doc = document;
 
-  //Store processed selection for next time this method is called
-  lastText = testText;
-  if (selection.toString() != "") {
-    if (!triggeredOnce) {
-      triggeredOnce = !triggeredOnce;
-    }
+  if (!doc.createElement) {
+    return;
   }
+
+  searchStr = searchStr.trim();
+
+  var MIN_WORD_LEN = 3;
+  if (searchStr.length < MIN_WORD_LEN) {
+    return;
+  }
+
+  let color = generateColorCode();
+
+  highlightWord(
+    doc.getElementsByTagName("body")[0],
+    searchStr,
+    doc,
+    color
+  );
 }
 
 function highlight(color) {
@@ -195,11 +215,12 @@ function clearHighlightsOnPage() {
 }
 
 function unhighlight(node, color) {
-  //if the passed color string isn't a Color object, convert it
+  // If the passed color string isn't a Color object, convert it
   if (!(color instanceof Color)) {
     color = new Color(color);
   }
-  //test to see if we've found an element node that has our same backgroundColor
+
+  // Test to see if we've found an element node that has our same backgroundColor
   if (node.nodeType == 1) {
     var bg = node.style.backgroundColor;
     if (bg && color.equals(new Color(bg))) {
@@ -212,7 +233,7 @@ function unhighlight(node, color) {
       }
     }
   }
-  //now recurse through all children of the passed node
+  // Now recurse through all children of the passed node
   var child = node.firstChild;
   while (child) {
     unhighlight(child, color);
@@ -220,8 +241,8 @@ function unhighlight(node, color) {
   }
 }
 
-//Removes the span tag from the passed node
-//node : must be the element node of the span (the <span> node, not it's textnode contents)
+// Removes the span tag from the passed node
+// node : must be the element node of the span (the <span> node, not it's textnode contents)
 function removeSpanTag(node) {
   var spliceText = node.innerHTML;
   var tempTextNode = document.createTextNode(spliceText);
@@ -254,7 +275,7 @@ function processGetSettings(response) {
 chrome.extension.sendRequest({ command: "getSettings" }, processGetSettings);
 
 /* Main content for highlighting
- * 
+ *
  * Highlighting is powered by a modified version of searchhi_slim.js:
  *      http://www.tedpavlic.com/post_simple_inpage_highlighting_example.php
  * as well as very helpful scripts from Tim Down @ stackoverflow.com
@@ -264,9 +285,9 @@ chrome.extension.sendRequest({ command: "getSettings" }, processGetSettings);
 var highlightRange = document.createRange();
 var colorgen;
 
-/* New from Rob Nitti, who credits 
+/* New from Rob Nitti, who credits
  * http://bytes.com/groups/javascript/145532-replace-french-characters-form-inp
- * The code finds accented vowels and replaces them with their unaccented version. 
+ * The code finds accented vowels and replaces them with their unaccented version.
  */
 function stripVowelAccent(str) {
   var rExps = [
@@ -291,17 +312,17 @@ function stripVowelAccent(str) {
   return str;
 }
 
-/* Modification of 
- * http://www.kryogenix.org/code/browser/searchhi/ 
- * See: 
- *   http://www.tedpavlic.com/post_highlighting_search_results_with_ted_searchhi_javascript.php 
- *   http://www.tedpavlic.com/post_inpage_highlighting_example.php 
- * for additional modifications of this base code. 
+/* Modification of
+ * http://www.kryogenix.org/code/browser/searchhi/
+ * See:
+ *   http://www.tedpavlic.com/post_highlighting_search_results_with_ted_searchhi_javascript.php
+ *   http://www.tedpavlic.com/post_inpage_highlighting_example.php
+ * for additional modifications of this base code.
  */
 function highlightWord(node, word, doc, color) {
   doc = typeof doc != "undefined" ? doc : document;
-  var hinodes = [],
-    coll;
+  var hinodes = [], coll;
+
   // Iterate into this nodes childNodes
   if (node.hasChildNodes) {
     var hi_cn;
@@ -311,9 +332,11 @@ function highlightWord(node, word, doc, color) {
     }
   }
 
+  var TEXT_NODE_TYPE = 3;
+
   // And do this node itself
-  if (node.nodeType == 3) {
-    // text node
+  if (node.nodeType == TEXT_NODE_TYPE) {
+    // Text node
     tempNodeVal = stripVowelAccent(node.nodeValue.toLowerCase());
     tempWordVal = stripVowelAccent(word.toLowerCase());
     ni = tempNodeVal.indexOf(tempWordVal);
@@ -322,6 +345,7 @@ function highlightWord(node, word, doc, color) {
       nv = node.nodeValue;
       highlightRange.setStart(node, ni);
       highlightRange.setEnd(node, ni + word.length);
+
       if (highlightRange) {
         selection.removeAllRanges();
         selection.addRange(highlightRange);
@@ -332,113 +356,28 @@ function highlightWord(node, word, doc, color) {
   return hinodes;
 }
 
-//Entry point from select.js
-function localSearchHighlight(searchStr, singleWordSearch, doc) {
-  var MAX_WORDS = 50; //limit for words to search, if unlimited, browser may crash
-  doc = typeof doc != "undefined" ? doc : document;
+function localSearchHighlight(searchStr) {
 
-  if (!doc.createElement) {
-    return;
-  }
-
-  // Trim leading and trailing spaces after unescaping
-  searchstr = unescape(searchStr).replace(/^\s+|\s+$/g, "");
-
-  if (searchStr == "") {
-    return;
-  }
-
-  //majgis: Single search option
-  if (singleWordSearch) {
-    phrases = searchStr.replace(/\+/g, " ").split(/\"/);
-  } else {
-    phrases = ["", searchStr];
-  }
-
-  var hinodes = [];
-  if (colorgen == undefined) colorgen = colorGenerator(singleWordSearch || !clearBetweenSelections);
-  let color = colorgen();
-
-  for (p = 0; p < phrases.length; p++) {
-    phrases[p] = unescape(phrases[p]).replace(/^\s+|\s+$/g, "");
-
-    if (phrases[p] == "") {
-      continue;
-    }
-
-    if (phrases[p].length < 3) {
-      continue;
-    }
-
-    if (p % 2 == 0) {
-      words = phrases[p]
-        .replace(/([+,()]|%(29|28)|\W+(AND|OR)\W+)/g, " ")
-        .split(/\s+/);
-    } else {
-      words = Array(1);
-      words[0] = phrases[p];
-    }
-
-    //limit length to prevent crashing browser
-    if (words.length > MAX_WORDS) {
-      words.splice(MAX_WORDS - 1, phrases.length - MAX_WORDS);
-    }
-
-    for (w = 0; w < words.length; w++) {
-      if (words[w] == "") {
-        continue;
-      }
-
-      hinodes = highlightWord(
-        doc.getElementsByTagName("body")[0],
-        words[w],
-        doc,
-        color
-      );
-    }
-  }
-
-  selection.removeAllRanges();
-  var oldSelection = document.getElementById("mySelectedSpan");
-  var reselectRange = document.createRange();
-  reselectRange.selectNode(oldSelection);
-  selection.addRange(reselectRange);
+  // selection.removeAllRanges();
+  // var oldSelection = document.getElementById("mySelectedSpan");
+  // var reselectRange = document.createRange();
+  // reselectRange.selectNode(oldSelection);
+  // selection.addRange(reselectRange);
 }
 
-// Returns function that generates color values
-// generateRandom: boolean to determine if function returned generates random colors
-function colorGenerator(generateRandom) {
-  var colorCodes = [
-    "#FFFF00", // yellow
-    "#FFA07A", // light salmon
-    "#DDA0DD", // plum
-    "#00FFFF", // aqua
-    "#A3A375", // light brown
-    "#008080", // teal
-    "#FFA07A" // light salmon
-  ];
-  var colorIndex = 0;
+var colorCodes = [
+  "#FFFF00", // yellow
+  "#FFA07A", // light salmon
+  "#DDA0DD", // plum
+  "#00FFFF", // aqua
+  "#A3A375", // light brown
+  "#008080", // teal
+  "#FFA07A" // light salmon
+];
 
-  return function() {
-    if (colorIndex >= colorCodes.length) colorIndex = 0;
-    return colorCodes[colorIndex++];
-  };
+var colorIndex = 0;
 
-  if (generateRandom) {
-    return function() {
-      var c = [hexshort(), hexshort(), hexshort()];
-      c = [c[0].toString(16), c[1].toString(16), c[2].toString(16)];
-      return c.join("");
-    };
-
-    // Function to return random values
-    function hexshort() {
-      return (~~(Math.random() * 0x10) << 4) | ~~(Math.random() * 0x10);
-    }
-  } else {
-    //Function to return fixed value
-    return function() {
-      return "FFFF00";
-    };
-  }
+function generateColorCode() {
+  if (colorIndex >= colorCodes.length) colorIndex = 0;
+  return colorCodes[colorIndex++];
 }
