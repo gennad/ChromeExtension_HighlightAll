@@ -223,9 +223,11 @@ function unhighlight(node, color) {
   // Test to see if we've found an element node that has our same backgroundColor
   if (node.nodeType == 1) {
     var bg = node.style.backgroundColor;
+
     if (bg && color.equals(new Color(bg))) {
-      //remove background color
+      // Remove background color
       node.style.backgroundColor = "";
+
       if (node.tagName.toLowerCase() == "span") {
         var parentNode = node.parentNode;
         removeSpanTag(node);
@@ -233,8 +235,10 @@ function unhighlight(node, color) {
       }
     }
   }
+
   // Now recurse through all children of the passed node
   var child = node.firstChild;
+
   while (child) {
     unhighlight(child, color);
     child = child.nextSibling;
