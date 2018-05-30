@@ -110,12 +110,12 @@ const RIGHT_MOUSE_CLICK = 2;
 // Main entry point.
 // Highlight all occurances of the current selection
 function highlightSelection(event) {
-  selection = window.getSelection();
+  // selection = window.getSelection();
 
   // Skip this section if mouse event is undefined
   if (event !== undefined) {
     // Ignore right clicks; avoids odd behavior with CTRL key
-    if (e.button == RIGHT_MOUSE_CLICK) {
+    if (event.button == RIGHT_MOUSE_CLICK) {
       return;
     }
 
@@ -130,75 +130,109 @@ function highlightSelection(event) {
     }
   }
 
-  var selectionTagName;
+  /*
   // Avoid inputs like the plague..
+  var selectionTagName;
   try {
     selectionTagName = selection.anchorNode.childNodes[0].tagName.toLowerCase();
   } catch (err) {
     // Fail silently
     return;
   }
-
   if (selectionTagName == "input") {
     return;
   }
+  */
 
   var selectedText = window
     .getSelection()
     .toString()
-    .replace(/^\s+|\s+$/g, "");
+    .replace(/^\s+|\s+$/g, "").trim();
 
   if (selectedText == "") return;
 
-  var lowerCasedText = selectedText.toLowerCase();
-  // Exit if selection is  what was previously selected
-  if (lastText == lowerCasedText) {
-    return;
-  }
-
-  if (selection.toString() != "") {
-    var spanElement = document.createElement("span");
-
-    // Remove id from previously selected
-    var prevSpan = document.getElementById("mySelectedSpan");
-    if (prevSpan != null) {
-      prevSpan.removeAttribute("id");
-    }
-
-    spanElement.id = "mySelectedSpan";
-
-    var range = selection.getRangeAt(0).cloneRange();
-
-    // Add text to span element
-    spanElement.appendChild(range.extractContents());
-
-    // Insert span element into the range
-    range.insertNode(spanElement);
-  }
-
-  // Limit for words to search, if unlimited, browser may crash
-  var MAX_WORDS = 50;
   var doc = document;
-
   if (!doc.createElement) {
     return;
   }
 
-  searchStr = searchStr.trim();
-
-  var MIN_WORD_LEN = 3;
-  if (searchStr.length < MIN_WORD_LEN) {
-    return;
-  }
 
   let color = generateColorCode();
+  myHighlight(color);
 
-  highlightWord(
-    doc.getElementsByTagName("body")[0],
-    searchStr,
-    doc,
-    color
-  );
+  //highlight
+
+  // highlightWordRecursively(document.body, selectedText, color);
+}
+
+
+function applyFunc(node, searchString, color) {
+  let parentNode = node.parentNode;
+  let text = node.nodeValue;
+
+  var indexOf = text.indexOf(searchString, 0);
+
+
+  if (indexOf != -1) {
+    highlightRange.setStart(node, indexOf);
+    highlightRange.setEnd(node, indexOf + searchString);
+
+    if (highlightRange) {
+      selection.removeAllRanges();
+      selection.addRange(highlightRange);
+    }
+    highlight(color);
+  }
+
+  return;
+
+
+
+
+
+  if (indexOf != -1) {
+    let modifiedHtml = '<span class="highlighted" style="background-color:' + color + '">' + searchString + '</span>'
+    //parentNode.innerHTML = modifiedHtml;
+    parentNode.innerHTML = replaceAll(parentNode.innerHTML, searchString, modifiedHtml);
+  }
+  //node.parentNode.replaceChild(ch1, node)
+  //"abcdcdd"
+
+
+
+  //var text = parentElement.innerHTML;
+  //let children = [];
+
+
+
+  //let spanOpenHtml = '<span class="highlighted" style="background-color:' + color + '">'
+
+
+  // while (indexOf != -1 && indexOf < text.length) {
+  //   let innerHTML = text.substring(0, indexOf) + spanOpenHtml + searchString + '</span>' + text.substring(indexOf + searchString.length);
+  //   parentElement.innerHTML = innerHTML;
+  //   text = innerHTML;
+  //   indexOf = text.indexOf(searchString, indexOf + spanOpenHtml.length + 1);
+  // }
+}
+
+function replaceAll(str, find, replace) {
+    find = '\\b' + find + '\\b';
+    return str.replace(new RegExp(find, 'g'), replace);
+}
+
+
+
+function highlightWordRecursively(element, searchString, color){
+  var node;
+  var textNodes = [];
+  var walker = document.createTreeWalker(element, NodeFilter.SHOW_TEXT, null, false);
+
+  while(node = walker.nextNode()) {
+    applyFunc(node, searchString, color);
+    //textNodes.push(node);
+  }
+  return textNodes;
 }
 
 function highlight(color) {
@@ -385,3 +419,50 @@ function generateColorCode() {
   if (colorIndex >= colorCodes.length) colorIndex = 0;
   return colorCodes[colorIndex++];
 }
+
+
+
+
+function makeEditableAndHighlight(colour) {
+    var range, sel = window.getSelection();
+
+    if (sel.rangeCount && sel.getRangeAt) {
+        range = sel.getRangeAt(0);
+    }
+
+    if (range) {
+        sel.removeAllRanges();
+        sel.addRange(range);
+    }
+
+    document.designMode = "on";
+    // Use HiliteColor since some browsers apply BackColor to the whole block
+    if (!document.execCommand("HiliteColor", false, colour)) {
+        document.execCommand("BackColor", false, colour);
+    }
+    document.designMode = "off";
+}
+
+function myHighlight(colour) {
+    var range, sel;
+    if (window.getSelection) {
+        // IE9 and non-IE
+        try {
+            if (!document.execCommand("BackColor", false, colour)) {
+                makeEditableAndHighlight(colour);
+            }
+        } catch (ex) {
+            makeEditableAndHighlight(colour)
+        }
+    } else if (document.selection && document.selection.createRange) {
+        // IE <= 8 case
+        range = document.selection.createRange();
+        range.execCommand("BackColor", false, colour);
+    }
+}
+
+// $(function() {
+//   $('#content').mouseup(function(){
+//         highlight('#D4FF00');
+//   });
+// });
