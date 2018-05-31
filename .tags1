@@ -1,0 +1,61 @@
+!_TAG_FILE_FORMAT	2	/extended format; --format=1 will not append ;" to lines/
+!_TAG_FILE_SORTED	0	/0=unsorted, 1=sorted, 2=foldcase/
+!_TAG_PROGRAM_AUTHOR	Darren Hiebert	/dhiebert@users.sourceforge.net/
+!_TAG_PROGRAM_NAME	Exuberant Ctags	//
+!_TAG_PROGRAM_URL	http://ctags.sourceforge.net	/official site/
+!_TAG_PROGRAM_VERSION	5.8	//
+clearBetweenSelections	/Users/gennad/ChromeExtension_HighlightAll/js/select.js	/^var clearBetweenSelections = true;$/;"	variable	line:9
+lastText	/Users/gennad/ChromeExtension_HighlightAll/js/select.js	/^var lastText = "";$/;"	variable	line:10
+imedBool	/Users/gennad/ChromeExtension_HighlightAll/js/select.js	/^var imedBool = false;$/;"	variable	line:11
+highlightedPage	/Users/gennad/ChromeExtension_HighlightAll/js/select.js	/^var highlightedPage = false;$/;"	variable	line:12
+select	/Users/gennad/ChromeExtension_HighlightAll/js/select.js	/^var select;$/;"	variable	line:13
+triggeredOnce	/Users/gennad/ChromeExtension_HighlightAll/js/select.js	/^var triggeredOnce = false;$/;"	variable	line:14
+ranges	/Users/gennad/ChromeExtension_HighlightAll/js/select.js	/^var ranges = [];$/;"	variable	line:16
+onmousedown	/Users/gennad/ChromeExtension_HighlightAll/js/select.js	/^document.onmousedown = function(event) {$/;"	function	line:21
+document.onmousedown	/Users/gennad/ChromeExtension_HighlightAll/js/select.js	/^document.onmouseup = highlightSelection;$/;"	function	line:20
+processRequest	/Users/gennad/ChromeExtension_HighlightAll/js/select.js	/^function processRequest(request, sender, sendResponse) {$/;"	function	line:34
+switch	/Users/gennad/ChromeExtension_HighlightAll/js/select.js	/^  switch (request.command) {$/;"	function	line:35
+processRequest	/Users/gennad/ChromeExtension_HighlightAll/js/select.js	/^function processRequest(request, sender, sendResponse) {$/;"	function	line:34
+componentFromStr	/Users/gennad/ChromeExtension_HighlightAll/js/select.js	/^function componentFromStr(numStr, percent) {$/;"	function	line:51
+componentFromStr	/Users/gennad/ChromeExtension_HighlightAll/js/select.js	/^function componentFromStr(numStr, percent) {$/;"	function	line:51
+rgbRegex	/Users/gennad/ChromeExtension_HighlightAll/js/select.js	/^var rgbRegex = \/^rgb\\(\\s*(-?\\d+)(%?)\\s*,\\s*(-?\\d+)(%?)\\s*,\\s*(-?\\d+)(%?)\\s*\\)$\/,$/;"	variable	line:58
+Color	/Users/gennad/ChromeExtension_HighlightAll/js/select.js	/^function Color(r, g, b) {$/;"	function	line:62
+Color	/Users/gennad/ChromeExtension_HighlightAll/js/select.js	/^function Color(r, g, b) {$/;"	class	line:62
+equals	/Users/gennad/ChromeExtension_HighlightAll/js/select.js	/^  equals: function(color) {$/;"	function	line:106
+Color.equals	/Users/gennad/ChromeExtension_HighlightAll/js/select.js	/^Color.prototype = {$/;"	method	line:105
+highlightSelection	/Users/gennad/ChromeExtension_HighlightAll/js/select.js	/^function highlightSelection(event) {$/;"	function	line:115
+highlightSelection	/Users/gennad/ChromeExtension_HighlightAll/js/select.js	/^function highlightSelection(event) {$/;"	function	line:115
+applyFunc	/Users/gennad/ChromeExtension_HighlightAll/js/select.js	/^function applyFunc(node, searchString, color) {$/;"	function	line:180
+applyFunc	/Users/gennad/ChromeExtension_HighlightAll/js/select.js	/^function applyFunc(node, searchString, color) {$/;"	function	line:180
+replaceAll	/Users/gennad/ChromeExtension_HighlightAll/js/select.js	/^function replaceAll(str, find, replace) {$/;"	function	line:245
+replaceAll	/Users/gennad/ChromeExtension_HighlightAll/js/select.js	/^function replaceAll(str, find, replace) {$/;"	function	line:245
+highlightWordRecursively	/Users/gennad/ChromeExtension_HighlightAll/js/select.js	/^function highlightWordRecursively(element, searchString, color){$/;"	function	line:252
+highlightWordRecursively	/Users/gennad/ChromeExtension_HighlightAll/js/select.js	/^function highlightWordRecursively(element, searchString, color){$/;"	function	line:252
+highlight	/Users/gennad/ChromeExtension_HighlightAll/js/select.js	/^function highlight(color) {$/;"	function	line:271
+highlight	/Users/gennad/ChromeExtension_HighlightAll/js/select.js	/^function highlight(color) {$/;"	function	line:271
+clearHighlightsOnPage	/Users/gennad/ChromeExtension_HighlightAll/js/select.js	/^function clearHighlightsOnPage() {$/;"	function	line:278
+clearHighlightsOnPage	/Users/gennad/ChromeExtension_HighlightAll/js/select.js	/^function clearHighlightsOnPage() {$/;"	function	line:278
+unhighlight	/Users/gennad/ChromeExtension_HighlightAll/js/select.js	/^function unhighlight(node, color) {$/;"	function	line:284
+unhighlight	/Users/gennad/ChromeExtension_HighlightAll/js/select.js	/^function unhighlight(node, color) {$/;"	function	line:284
+removeSpanTag	/Users/gennad/ChromeExtension_HighlightAll/js/select.js	/^function removeSpanTag(node) {$/;"	function	line:317
+removeSpanTag	/Users/gennad/ChromeExtension_HighlightAll/js/select.js	/^function removeSpanTag(node) {$/;"	function	line:317
+updateBooleans	/Users/gennad/ChromeExtension_HighlightAll/js/select.js	/^function updateBooleans(clearBool, highlightOnSelect, singleBool) {$/;"	function	line:325
+updateBooleans	/Users/gennad/ChromeExtension_HighlightAll/js/select.js	/^function updateBooleans(clearBool, highlightOnSelect, singleBool) {$/;"	function	line:325
+processGetSettings	/Users/gennad/ChromeExtension_HighlightAll/js/select.js	/^function processGetSettings(response) {$/;"	function	line:332
+processGetSettings	/Users/gennad/ChromeExtension_HighlightAll/js/select.js	/^function processGetSettings(response) {$/;"	function	line:332
+highlightRange	/Users/gennad/ChromeExtension_HighlightAll/js/select.js	/^var highlightRange = document.createRange();$/;"	variable	line:356
+colorgen	/Users/gennad/ChromeExtension_HighlightAll/js/select.js	/^var colorgen;$/;"	variable	line:357
+stripVowelAccent	/Users/gennad/ChromeExtension_HighlightAll/js/select.js	/^function stripVowelAccent(str) {$/;"	function	line:363
+stripVowelAccent	/Users/gennad/ChromeExtension_HighlightAll/js/select.js	/^function stripVowelAccent(str) {$/;"	function	line:363
+highlightWord	/Users/gennad/ChromeExtension_HighlightAll/js/select.js	/^function highlightWord(node, word, doc, color) {$/;"	function	line:393
+highlightWord	/Users/gennad/ChromeExtension_HighlightAll/js/select.js	/^function highlightWord(node, word, doc, color) {$/;"	function	line:393
+localSearchHighlight	/Users/gennad/ChromeExtension_HighlightAll/js/select.js	/^function localSearchHighlight(searchStr) {$/;"	function	line:430
+localSearchHighlight	/Users/gennad/ChromeExtension_HighlightAll/js/select.js	/^function localSearchHighlight(searchStr) {$/;"	function	line:430
+colorCodes	/Users/gennad/ChromeExtension_HighlightAll/js/select.js	/^var colorCodes = [$/;"	variable	line:439
+colorIndex	/Users/gennad/ChromeExtension_HighlightAll/js/select.js	/^var colorIndex = 0;$/;"	variable	line:449
+generateColorCode	/Users/gennad/ChromeExtension_HighlightAll/js/select.js	/^function generateColorCode() {$/;"	function	line:451
+generateColorCode	/Users/gennad/ChromeExtension_HighlightAll/js/select.js	/^function generateColorCode() {$/;"	function	line:451
+makeEditableAndHighlight	/Users/gennad/ChromeExtension_HighlightAll/js/select.js	/^function makeEditableAndHighlight(colour) {$/;"	function	line:459
+makeEditableAndHighlight	/Users/gennad/ChromeExtension_HighlightAll/js/select.js	/^function makeEditableAndHighlight(colour) {$/;"	function	line:459
+myHighlight	/Users/gennad/ChromeExtension_HighlightAll/js/select.js	/^function myHighlight(colour) {$/;"	function	line:480
+myHighlight	/Users/gennad/ChromeExtension_HighlightAll/js/select.js	/^function myHighlight(colour) {$/;"	function	line:480

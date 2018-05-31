@@ -13,6 +13,9 @@ var highlightedPage = false;
 var select;
 var triggeredOnce = false;
 
+var ranges = [];
+var set = new Set();
+
 // Listener to highlight on selection
 document.onmouseup = highlightSelection;
 document.onmousedown = function(event) {
@@ -158,11 +161,19 @@ function highlightSelection(event) {
 
 
   let color = generateColorCode();
-  myHighlight(color);
 
-  //highlight
+  var selection = window.getSelection();
+  var range;
 
-  // highlightWordRecursively(document.body, selectedText, color);
+  if (selection.rangeCount && selection.getRangeAt) range = selection.getRangeAt(0);
+
+  if (range) {
+    selection.removeAllRanges();
+  }
+
+  highlightWordRecursively(document.body, selectedText, color);
+  window.getSelection().removeAllRanges();
+  set.clear();
 }
 
 
@@ -170,19 +181,34 @@ function applyFunc(node, searchString, color) {
   let parentNode = node.parentNode;
   let text = node.nodeValue;
 
-  var indexOf = text.indexOf(searchString, 0);
+  var pattern = '\\b' + searchString + '\\b';
+  var regex = new RegExp(pattern, 'g');
+  //var regex = /text/gim;
+  var match;
+  var selection = window.getSelection();
 
+  while (match = regex.exec(text)) {
+    if (set.has(text)) return;
+    set.add(text);
 
-  if (indexOf != -1) {
-    highlightRange.setStart(node, indexOf);
-    highlightRange.setEnd(node, indexOf + searchString);
+    console.log('while start');
+    console.log(text);
+    var startIndex = regex.lastIndex - match[0].length;
+    var endIndex = regex.lastIndex;
 
-    if (highlightRange) {
-      selection.removeAllRanges();
-      selection.addRange(highlightRange);
-    }
-    highlight(color);
+    var range = document.createRange();
+    range.setStart(node, startIndex);
+    range.setEnd(node, endIndex);
+
+    selection.removeAllRanges();
+    selection.addRange(range);
+    myHighlight(color);
+
+    regex = new RegExp(pattern, 'g');
+    text = node.nodeValue;
+    console.log('while end');
   }
+
 
   return;
 
@@ -228,11 +254,18 @@ function highlightWordRecursively(element, searchString, color){
   var textNodes = [];
   var walker = document.createTreeWalker(element, NodeFilter.SHOW_TEXT, null, false);
 
+  console.log('start walking')
   while(node = walker.nextNode()) {
-    applyFunc(node, searchString, color);
+    if (node.nodeValue.indexOf(searchString) != -1) {
+      console.log("found " + searchString);
+        applyFunc(node, searchString, color);
+    }
+
     //textNodes.push(node);
   }
+  console.log('end walking')
   return textNodes;
+
 }
 
 function highlight(color) {
@@ -424,16 +457,17 @@ function generateColorCode() {
 
 
 function makeEditableAndHighlight(colour) {
-    var range, sel = window.getSelection();
-
-    if (sel.rangeCount && sel.getRangeAt) {
-        range = sel.getRangeAt(0);
-    }
-
-    if (range) {
-        sel.removeAllRanges();
-        sel.addRange(range);
-    }
+    // var range;
+    // var sel = window.getSelection();
+    //
+    // if (sel.rangeCount && sel.getRangeAt) {
+    //     range = sel.getRangeAt(0);
+    // }
+    //
+    // if (range) {
+    //     sel.removeAllRanges();
+    //     sel.addRange(range);
+    // }
 
     document.designMode = "on";
     // Use HiliteColor since some browsers apply BackColor to the whole block
@@ -444,21 +478,23 @@ function makeEditableAndHighlight(colour) {
 }
 
 function myHighlight(colour) {
-    var range, sel;
-    if (window.getSelection) {
-        // IE9 and non-IE
-        try {
-            if (!document.execCommand("BackColor", false, colour)) {
-                makeEditableAndHighlight(colour);
-            }
-        } catch (ex) {
-            makeEditableAndHighlight(colour)
-        }
-    } else if (document.selection && document.selection.createRange) {
-        // IE <= 8 case
-        range = document.selection.createRange();
-        range.execCommand("BackColor", false, colour);
-    }
+    //var range, sel;
+    makeEditableAndHighlight(colour);
+
+    // if (window.getSelection) {
+    //     // IE9 and non-IE
+    //     try {
+    //         if (!document.execCommand("BackColor", false, colour)) {
+    //             makeEditableAndHighlight(colour);
+    //         }
+    //     } catch (ex) {
+    //         makeEditableAndHighlight(colour)
+    //     }
+    // } else if (document.selection && document.selection.createRange) {
+    //     // IE <= 8 case
+    //     range = document.selection.createRange();
+    //     range.execCommand("BackColor", false, colour);
+    // }
 }
 
 // $(function() {
